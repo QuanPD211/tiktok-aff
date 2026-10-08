@@ -104,7 +104,7 @@ async function fetchAll() {
     if (r.error) errors.push(`${feed.name}: ${r.error}`);
   }
   // Keep the table small: drop old items that were never imported
-  db.prepare("DELETE FROM feed_items WHERE post_id IS NULL AND pub_date < ?").run(new Date(Date.now() - 7 * 86400e3).toISOString());
+  db.prepare("DELETE FROM feed_items WHERE post_id IS NULL AND pub_date < ?").run(new Date(Date.now() - 1 * 86400e3).toISOString());
   return { added, errors };
 }
 
@@ -127,13 +127,4 @@ async function downloadImage(url, uploadDir) {
   }
 }
 
-let timer = null;
-function startAutoFetch(minutes) {
-  if (!minutes || minutes <= 0) return;
-  const run = () => fetchAll().then((r) => r.added && console.log(`[rss] +${r.added} tin mới`)).catch(() => {});
-  setTimeout(run, 5000);
-  timer = setInterval(run, minutes * 60 * 1000);
-  timer.unref();
-}
-
-module.exports = { fetchFeed, fetchAll, downloadImage, startAutoFetch };
+module.exports = { fetchFeed, fetchAll, downloadImage };

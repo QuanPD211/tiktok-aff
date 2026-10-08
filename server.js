@@ -383,8 +383,6 @@ app.post('/admin/feeds/import', requireAdmin, async (req, res) => {
 
 app.use((req, res) => res.status(404).render('404'));
 
-feeds.startAutoFetch(parseInt(process.env.FEED_INTERVAL_MIN ?? '30'));
-
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
   console.log(`Admin: http://localhost:${PORT}/admin`);
