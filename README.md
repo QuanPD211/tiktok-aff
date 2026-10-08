@@ -20,3 +20,16 @@ Admin: `http://localhost:3000/admin` — mặc định `admin` / `admin123`, đ�
 - **Nguồn tin RSS** (`/admin/feeds`): lấy tin từ VnExpress, Kenh14 (thêm nguồn khác bằng link RSS). Nhập tin tạo **bài nháp** gồm tiêu đề, mô tả ngắn, ảnh và ghi nguồn — viết thêm nội dung riêng rồi mới đăng. Chỉ lấy tin khi bấm "Lấy tin mới ngay"; tin chưa nhập quá 1 ngày tự bị xóa.
 
 Dữ liệu lưu ở `data/app.db` (SQLite), ảnh upload lưu ở `public/uploads/`.
+
+## Deploy lên VPS (Ubuntu 22.04 / 24.04)
+
+```bash
+# Từ máy cá nhân: chép script lên VPS rồi chạy
+scp deploy.sh root@<IP>:/root/
+ssh -t root@<IP> "bash /root/deploy.sh --repo git@github.com:<user>/tiktok-aff.git --domain tenmien.com --email ban@gmail.com"
+
+# Cập nhật code về sau (sau khi git push)
+ssh root@<IP> "bash /var/www/tiktok-aff/deploy.sh"
+```
+
+Bỏ `--domain`/`--email` nếu chưa có tên miền (web chạy bằng IP). Script tự cài Node 22, PM2, Nginx, tường lửa, SSL Let's Encrypt và tạo mật khẩu admin ngẫu nhiên (in ra cuối, lưu trong `.env`).
