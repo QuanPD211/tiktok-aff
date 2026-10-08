@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof pageTitle !== 'undefined' ? pageTitle + ' - ' + settings.site_name : settings.site_name %></title>
+  <meta name="description" content="<%= typeof pageDesc !== 'undefined' ? pageDesc : settings.site_description %>">
+  <meta name="theme-color" content="#ffffff">
+  <% if (typeof og !== 'undefined') { %>
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="<%= settings.site_name %>">
+  <meta property="og:title" content="<%= og.title %>">
+  <meta property="og:description" content="<%= og.description %>">
+  <meta property="og:url" content="<%= og.url %>">
+  <% if (og.image) { %><meta property="og:image" content="<%= og.image %>"><% } %>
+  <meta name="twitter:card" content="summary_large_image">
+  <% } %>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Lora:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="logo"><span class="logo-mark"></span><%= settings.site_name %></a>
+      <nav class="header-nav">
+        <a href="/" class="active">Mới nhất</a>
+        <a href="/#popular">Đọc nhiều</a>
+      </nav>
+      <time class="header-date" id="today"></time>
+    </div>
+  </header>
+  <script>
+    document.getElementById('today').textContent = new Date().toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+  </script>
+  <main class="container main">

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { margin: 0; height: 100vh; overflow: hidden; }
+    .fake-page { padding: 20px 16px; }
+    .fake-page div { height: 14px; border-radius: 7px; background: #e5e7eb; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <div class="fake-page">
+    <div style="width:80%;height:24px"></div>
+    <div></div><div></div><div style="width:60%"></div>
+    <div style="height:160px"></div>
+    <div></div><div></div><div style="width:70%"></div>
+  </div>
+  <%- include('../partials/ad-popup', { preview: true }) %>
+</body>
+</html>

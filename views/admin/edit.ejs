@@ -1,0 +1,77 @@
+<%- include('_header', { title: post.id ? 'Sửa bài' : 'Viết bài', editor: true }) %>
+<div class="page-head">
+  <h1><%= post.id ? 'Sửa bài viết' : 'Viết bài mới' %></h1>
+  <% if (post.id) { %><a class="btn" href="/p/<%= post.slug %>" target="_blank">Xem bài</a><% } %>
+</div>
+
+<form method="post" action="/admin/posts/save" enctype="multipart/form-data" id="post-form" class="form">
+  <input type="hidden" name="id" value="<%= post.id %>">
+
+  <label>Tiêu đề *<input name="title" value="<%= post.title %>" required></label>
+  <label>Slug (đường dẫn, để trống sẽ tự tạo từ tiêu đề)<input name="slug" value="<%= post.slug %>"></label>
+  <label>Mô tả ngắn (hiện khi chia sẻ link)<textarea name="summary" rows="2"><%= post.summary %></textarea></label>
+
+  <fieldset>
+    <legend>Ảnh đại diện (hiện khi chia sẻ link)</legend>
+    <% if (post.thumbnail) { %><img src="<%= post.thumbnail %>" class="preview"><% } %>
+    <label>Tải ảnh lên<input type="file" name="thumbnail_file" accept="image/*"></label>
+    <label>Hoặc URL ảnh<input name="thumbnail" value="<%= post.thumbnail %>"></label>
+  </fieldset>
+
+  <label>Nội dung</label>
+  <div id="editor"><%- post.content %></div>
+  <input type="hidden" name="content" id="content-input">
+
+  <label>Link chuyển hướng riêng cho bài này
+    <input name="redirect_url" type="url" value="<%= post.redirect_url %>" placeholder="Để trống = dùng link mặc định: <%= settings.redirect_url %>">
+  </label>
+  <p class="muted small">Để trống sẽ dùng link mặc định <strong><%= settings.redirect_url %></strong> (sửa ở trang Bài viết hoặc Cài đặt).</p>
+
+  <label class="check"><input type="checkbox" name="published" <%= post.published ? 'checked' : '' %>> Hiển thị bài viết</label>
+
+  <button class="btn primary" type="submit">Lưu bài viết</button>
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
+<script>
+  var quill = new Quill('#editor', {
+    theme: 'snow',
+    modules: {
+      toolbar: {
+        container: [
+          [{ header: [2, 3, false] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          [{ list: 'ordered' }, { list: 'bullet' }, 'blockquote'],
+          [{ align: [] }],
+          ['link', 'image', 'video'],
+          ['clean'],
+        ],
+        handlers: {
+          image: function () {
+            var input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function () {
+              var fd = new FormData();
+              fd.append('image', input.files[0]);
+              fetch('/admin/upload', { method: 'POST', body: fd })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                  if (!data.url) return alert('Upload ảnh thất bại');
+                  var range = quill.getSelection(true);
+                  quill.insertEmbed(range.index, 'image', data.url);
+                })
+                .catch(function () { alert('Upload ảnh thất bại'); });
+            };
+            input.click();
+          },
+        },
+      },
+    },
+  });
+
+  document.getElementById('post-form').addEventListener('submit', function () {
+    document.getElementById('content-input').value = quill.root.innerHTML;
+  });
+</script>
+<%- include('_footer') %>

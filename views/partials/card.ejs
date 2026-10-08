@@ -1,0 +1,10 @@
+<a class="card" href="/p/<%= p.slug %>">
+  <div class="card-thumb">
+    <% if (p.thumbnail) { %><img src="<%= p.thumbnail %>" alt="" loading="lazy"><% } %>
+  </div>
+  <div class="card-body">
+    <h2><%= p.title %></h2>
+    <% if (p.summary) { %><p><%= p.summary %></p><% } %>
+    <time><%= p.created_at %></time>
+  </div>
+</a>

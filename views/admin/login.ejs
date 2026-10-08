@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập - Admin</title>
+  <meta name="robots" content="noindex">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="login-page">
+  <form method="post" action="/admin/login" class="login-box">
+    <h1>Đăng nhập Admin</h1>
+    <% if (error) { %><div class="flash error"><%= error %></div><% } %>
+    <label>Tên đăng nhập<input name="username" required autofocus></label>
+    <label>Mật khẩu<input name="password" type="password" required></label>
+    <button class="btn primary" type="submit">Đăng nhập</button>
+  </form>
+</body>
+</html>

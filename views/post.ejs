@@ -1,0 +1,80 @@
+<%- include('partials/header', {
+  pageTitle: post.title,
+  pageDesc: post.summary,
+  og: { title: post.title, description: post.summary, url: pageUrl, image: ogImage }
+}) %>
+<div class="layout">
+  <article class="article">
+    <nav class="breadcrumb"><a href="/">Trang chủ</a><span>/</span>Tin tức</nav>
+    <h1><%= post.title %></h1>
+    <div class="meta">
+      <span class="author-dot"><%= settings.site_name.charAt(0) %></span>
+      <span><strong><%= settings.site_name %></strong></span>
+      <span>·</span><time><%= post.created_at %></time>
+      <span>·</span><span><%= readMinutes %> phút đọc</span>
+    </div>
+    <% if (post.summary) { %><p class="lead"><%= post.summary %></p><% } %>
+    <% if (post.thumbnail) { %><img class="cover" src="<%= post.thumbnail %>" alt="<%= post.title %>"><% } %>
+    <div class="content"><%- post.content %></div>
+  </article>
+  <aside class="sidebar"><%- include('partials/popular') %></aside>
+</div>
+
+<% if (related.length) { %>
+<section class="related">
+  <h3 class="section-title">Tin liên quan</h3>
+  <div class="grid">
+    <% related.forEach(function (p) { %><%- include('partials/card', { p }) %><% }) %>
+  </div>
+</section>
+<% } %>
+
+<% if (popup.enabled && popup.redirectUrl) { %>
+<%- include('partials/ad-popup') %>
+<script>
+(function () {
+  var cfg = <%- JSON.stringify(popup).replace(/</g, '\\u003c') %>;
+  var el = document.getElementById('ad-popup');
+  var active = true;
+  var timer;
+
+  function go(e) {
+    if (!active) return;
+    e.preventDefault();
+    e.stopPropagation();
+    try { navigator.sendBeacon('/api/click/' + cfg.postId); } catch (_) {}
+    if (cfg.newTab) {
+      // Open once in a new tab, then let the reader continue normally
+      active = false;
+      clearTimeout(timer);
+      window.open(cfg.redirectUrl, '_blank');
+      hide();
+    } else {
+      window.location.href = cfg.redirectUrl;
+    }
+  }
+
+  function show() {
+    el.hidden = false;
+    requestAnimationFrame(function () { el.classList.add('is-open'); });
+    document.documentElement.classList.add('ad-lock');
+  }
+
+  function hide() {
+    el.classList.remove('is-open');
+    el.hidden = true;
+    document.documentElement.classList.remove('ad-lock');
+  }
+
+  // Capture phase: any click/tap anywhere on the page (with or without popup) triggers the redirect
+  document.addEventListener('click', go, true);
+  timer = setTimeout(show, cfg.delay * 1000);
+
+  // Coming back with the browser Back button (bfcache): re-arm the redirect and popup
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted && !cfg.newTab) { active = true; show(); }
+  });
+})();
+</script>
+<% } %>
+<%- include('partials/footer') %>

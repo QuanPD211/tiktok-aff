@@ -1,0 +1,117 @@
+<%- include('_header', { title: 'Nguồn tin RSS' }) %>
+<%
+  const fmt = (iso) => iso ? new Date(iso).toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) : '';
+  const qs = (o) => '?' + new URLSearchParams(Object.assign({ feed: feedId || '', status: status }, o)).toString();
+%>
+<div class="page-head">
+  <h1>Nguồn tin RSS</h1>
+  <form method="post" action="/admin/feeds/refresh" onsubmit="this.querySelector('button').textContent='Đang lấy tin...'">
+    <button class="btn primary" type="submit">↻ Lấy tin mới ngay</button>
+  </form>
+</div>
+
+<div class="note">
+  Tin nhập về chỉ gồm <strong>tiêu đề, mô tả ngắn, ảnh</strong> và <strong>ghi nguồn</strong>, lưu ở dạng <strong>bài nháp</strong>.
+  Bạn nên viết thêm nội dung riêng trước khi bật "Hiển thị", không sao chép toàn văn bài gốc.
+</div>
+
+<details class="sources" <%= feedList.length ? '' : 'open' %>>
+  <summary>Quản lý nguồn (<%= feedList.length %>)</summary>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Tên nguồn</th><th>Link RSS</th><th>Lấy lần cuối</th><th>Tin mới</th><th></th></tr></thead>
+      <tbody>
+        <% feedList.forEach(function (f) { %>
+        <tr>
+          <td><strong><%= f.name %></strong></td>
+          <td class="small"><a href="<%= f.url %>" target="_blank"><%= f.url %></a>
+            <% if (f.last_error) { %><div class="err">Lỗi: <%= f.last_error %></div><% } %></td>
+          <td class="small muted"><%= f.last_fetched || 'Chưa lấy' %></td>
+          <td><%= f.new_count %></td>
+          <td class="actions">
+            <form method="post" action="/admin/feeds/<%= f.id %>/delete" onsubmit="return confirm('Xóa nguồn này? Bài đã nhập vẫn được giữ.')">
+              <button class="btn small danger" type="submit">Xóa</button>
+            </form>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <form method="post" action="/admin/feeds/add" class="add-feed">
+    <input name="name" placeholder="Tên nguồn, vd: VnExpress - Thể thao" required>
+    <input name="url" type="url" placeholder="https://vnexpress.net/rss/the-thao.rss" required>
+    <button class="btn primary" type="submit">+ Thêm nguồn</button>
+  </form>
+</details>
+
+<div class="filters">
+  <div class="tabs">
+    <a href="<%= qs({ status: 'new' }) %>" class="<%= status === 'new' ? 'active' : '' %>">Chưa nhập</a>
+    <a href="<%= qs({ status: 'imported' }) %>" class="<%= status === 'imported' ? 'active' : '' %>">Đã nhập</a>
+    <a href="<%= qs({ status: 'all' }) %>" class="<%= status === 'all' ? 'active' : '' %>">Tất cả</a>
+  </div>
+  <select onchange="location.href=this.value">
+    <option value="<%= qs({ feed: '' }) %>">Tất cả nguồn</option>
+    <% feedList.forEach(function (f) { %>
+      <option value="<%= qs({ feed: f.id }) %>" <%= f.id === feedId ? 'selected' : '' %>><%= f.name %> (<%= f.new_count %>)</option>
+    <% }) %>
+  </select>
+</div>
+
+<% if (!items.length) { %>
+  <p class="muted">Không có tin nào. Bấm "Lấy tin mới ngay" để cập nhật.</p>
+<% } else { %>
+<form method="post" action="/admin/feeds/import" id="bulk-form">
+  <div class="bulk-bar">
+    <label class="check-all"><input type="checkbox" id="check-all"> Chọn tất cả</label>
+    <button class="btn primary small" type="submit" id="bulk-btn" disabled>Nhập các tin đã chọn (<span id="sel-count">0</span>)</button>
+  </div>
+  <div class="items">
+    <% items.forEach(function (it) { %>
+    <div class="item <%= it.post_id ? 'is-imported' : '' %>">
+      <% if (!it.post_id) { %><input type="checkbox" name="ids" value="<%= it.id %>" class="item-check"><% } else { %><span class="item-check-placeholder"></span><% } %>
+      <div class="item-thumb"><% if (it.image) { %><img src="<%= it.image %>" alt="" loading="lazy" referrerpolicy="no-referrer"><% } %></div>
+      <div class="item-body">
+        <a class="item-title" href="<%= it.link %>" target="_blank" rel="noopener"><%= it.title %></a>
+        <p><%= it.summary %></p>
+        <div class="small muted"><span class="tag"><%= it.feed_name %></span> · <%= fmt(it.pub_date) %></div>
+      </div>
+      <div class="item-actions">
+        <% if (it.post_id) { %>
+          <a class="btn small" href="/admin/posts/<%= it.post_id %>/edit">Đã nhập · Sửa</a>
+        <% } else { %>
+          <button type="button" class="btn small primary import-one" data-id="<%= it.id %>">Nhập</button>
+        <% } %>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+</form>
+<form method="post" action="/admin/feeds/import" id="single-form" hidden><input type="hidden" name="ids"></form>
+<% } %>
+
+<script>
+  (function () {
+    var checks = Array.prototype.slice.call(document.querySelectorAll('.item-check'));
+    var all = document.getElementById('check-all');
+    var btn = document.getElementById('bulk-btn');
+    function update() {
+      var n = checks.filter(function (c) { return c.checked; }).length;
+      if (btn) { btn.disabled = !n; document.getElementById('sel-count').textContent = n; }
+    }
+    checks.forEach(function (c) { c.addEventListener('change', update); });
+    if (all) all.addEventListener('change', function () { checks.forEach(function (c) { c.checked = all.checked; }); update(); });
+    if (btn) document.getElementById('bulk-form').addEventListener('submit', function () { btn.textContent = 'Đang nhập...'; });
+
+    document.querySelectorAll('.import-one').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var f = document.getElementById('single-form');
+        f.ids.value = b.dataset.id;
+        b.textContent = 'Đang nhập...';
+        f.submit();
+      });
+    });
+  })();
+</script>
+<%- include('_footer') %>

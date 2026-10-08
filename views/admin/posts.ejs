@@ -1,0 +1,81 @@
+<%- include('_header', { title: 'Bài viết' }) %>
+<div class="page-head">
+  <h1>Bài viết (<%= posts.length %>)</h1>
+  <a class="btn primary" href="/admin/posts/new">+ Viết bài mới</a>
+</div>
+
+<form method="post" action="/admin/default-link" class="default-link">
+  <label for="default-link">Link chuyển hướng mặc định <span class="muted small">(áp dụng cho mọi bài không đặt link riêng)</span></label>
+  <div class="copy-row">
+    <input id="default-link" name="redirect_url" type="url" value="<%= settings.redirect_url %>" required placeholder="https://...">
+    <button class="btn primary" type="submit">Lưu</button>
+  </div>
+</form>
+
+<% if (!posts.length) { %>
+  <p class="muted">Chưa có bài viết nào.</p>
+<% } else { %>
+<div class="table-wrap">
+<table>
+  <thead>
+    <tr>
+      <th>Tiêu đề</th>
+      <th>Link chia sẻ</th>
+      <th>Lượt xem</th>
+      <th>Lượt click</th>
+      <th>Trạng thái</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% posts.forEach(function (p) { %>
+    <tr>
+      <td>
+        <strong><%= p.title %></strong>
+        <div class="muted small"><%= p.created_at %></div>
+        <div class="small">
+          Chuyển tới:
+          <% if (p.redirect_url) { %><strong>link riêng</strong> <%= p.redirect_url %>
+          <% } else { %><span class="tag">mặc định</span> <%= settings.redirect_url %><% } %>
+        </div>
+      </td>
+      <td>
+        <div class="copy-row">
+          <input readonly class="share-link" data-path="/p/<%= p.slug %>">
+          <button type="button" class="btn small copy-btn">Copy</button>
+        </div>
+      </td>
+      <td><%= p.views %></td>
+      <td><%= p.clicks %></td>
+      <td><% if (p.published) { %><span class="tag tag--ok">Hiển thị</span><% } else { %><span class="tag tag--draft">Nháp</span><% } %></td>
+      <td class="actions">
+        <a class="btn small" href="/admin/posts/<%= p.id %>/edit">Sửa</a>
+        <form method="post" action="/admin/posts/<%= p.id %>/delete" onsubmit="return confirm('Xóa bài viết này?')">
+          <button class="btn small danger" type="submit">Xóa</button>
+        </form>
+      </td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>
+</div>
+<% } %>
+
+<script>
+  document.querySelectorAll('.share-link').forEach(function (input) {
+    input.value = location.origin + input.dataset.path;
+  });
+  document.querySelectorAll('.copy-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var input = btn.previousElementSibling;
+      input.select();
+      (navigator.clipboard ? navigator.clipboard.writeText(input.value) : Promise.reject())
+        .catch(function () { document.execCommand('copy'); })
+        .finally(function () {
+          btn.textContent = 'Đã copy';
+          setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
+        });
+    });
+  });
+</script>
+<%- include('_footer') %>

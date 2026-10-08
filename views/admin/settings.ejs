@@ -1,0 +1,121 @@
+<%- include('_header', { title: 'Cài đặt' }) %>
+<div class="page-head"><h1>Cài đặt</h1></div>
+
+<form method="post" action="/admin/settings" enctype="multipart/form-data" class="settings-grid" id="settings-form">
+  <div class="form">
+    <fieldset>
+      <legend>Chuyển hướng</legend>
+      <label>Link chuyển hướng mặc định *
+        <input name="redirect_url" type="url" value="<%= settings.redirect_url %>" required placeholder="https://...">
+      </label>
+      <p class="muted small">Người đọc bấm vào bất kỳ đâu trên trang bài viết (kể cả nút tắt popup) sẽ được chuyển tới link này. Bài viết có "link riêng" sẽ ưu tiên link riêng.</p>
+      <label>Cách mở link
+        <select name="redirect_mode">
+          <option value="same_tab" <%= settings.redirect_mode === 'same_tab' ? 'selected' : '' %>>Chuyển trang hiện tại sang link mới</option>
+          <option value="new_tab" <%= settings.redirect_mode === 'new_tab' ? 'selected' : '' %>>Mở link trong tab mới (giữ lại bài viết)</option>
+        </select>
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Popup quảng cáo</legend>
+      <label class="check"><input type="checkbox" name="popup_enabled" <%= settings.popup_enabled === '1' ? 'checked' : '' %>> Bật popup &amp; chuyển hướng khi bấm</label>
+
+      <label>Kiểu hiển thị</label>
+      <div class="layout-picker">
+        <% [['center', 'Giữa màn hình', 'Hộp quảng cáo nổi ở giữa'], ['fullscreen', 'Toàn màn hình', 'Giống quảng cáo trong app'], ['bottom', 'Trượt từ dưới', 'Bảng trượt lên từ đáy']].forEach(function (o) { %>
+          <label class="layout-option">
+            <input type="radio" name="popup_layout" value="<%= o[0] %>" <%= (settings.popup_layout || 'center') === o[0] ? 'checked' : '' %>>
+            <span class="layout-icon layout-icon--<%= o[0] %>"><i></i></span>
+            <strong><%= o[1] %></strong>
+            <small><%= o[2] %></small>
+          </label>
+        <% }) %>
+      </div>
+
+      <div class="row">
+        <label>Tên thương hiệu<input name="popup_brand" value="<%= settings.popup_brand %>" data-preview="brand"></label>
+        <label>Nhãn nổi bật (vd: -50%)<input name="popup_badge" value="<%= settings.popup_badge %>" data-preview="badge"></label>
+      </div>
+      <label>Tiêu đề<input name="popup_title" value="<%= settings.popup_title %>" data-preview="title"></label>
+      <label>Nội dung<textarea name="popup_text" rows="3" data-preview="text"><%= settings.popup_text %></textarea></label>
+      <div class="row">
+        <label>Chữ trên nút<input name="popup_button" value="<%= settings.popup_button %>" data-preview="cta"></label>
+        <label>Hiện popup sau (giây)<input name="popup_delay" type="number" min="0" value="<%= settings.popup_delay %>"></label>
+      </div>
+
+      <% if (settings.popup_image) { %>
+        <img src="<%= settings.popup_image %>" class="preview">
+        <label class="check"><input type="checkbox" name="remove_popup_image"> Xóa ảnh popup</label>
+      <% } %>
+      <label>Tải ảnh quảng cáo lên<input type="file" name="popup_image_file" accept="image/*"></label>
+      <label>Hoặc URL ảnh<input name="popup_image" value="<%= settings.popup_image %>"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Website</legend>
+      <label>Tên website<input name="site_name" value="<%= settings.site_name %>"></label>
+      <label>Mô tả website<input name="site_description" value="<%= settings.site_description %>"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Tài khoản admin</legend>
+      <label>Tên đăng nhập<input name="admin_username" value="<%= settings.admin_username %>"></label>
+      <label>Mật khẩu mới (để trống nếu không đổi)<input name="new_password" type="password" autocomplete="new-password"></label>
+    </fieldset>
+
+    <button class="btn primary" type="submit">Lưu cài đặt</button>
+  </div>
+
+  <div class="preview-col">
+    <div class="phone">
+      <iframe src="/admin/popup-preview" id="preview-frame" title="Xem trước popup"></iframe>
+    </div>
+    <p class="muted small center">Xem trước trên điện thoại · ảnh mới hiện sau khi lưu</p>
+  </div>
+</form>
+
+<script>
+  (function () {
+    var frame = document.getElementById('preview-frame');
+    var form = document.getElementById('settings-form');
+    function doc() { return frame.contentDocument; }
+    function q(sel) { return doc() && doc().querySelector(sel); }
+
+    function sync() {
+      if (!doc()) return;
+      var brand = form.popup_brand.value || <%- JSON.stringify(settings.site_name).replace(/</g, '\\u003c') %>;
+      var ad = q('.ad');
+      if (!ad) return;
+      ad.className = 'ad is-open ad--' + form.popup_layout.value;
+      setText('.ad__brand strong', brand);
+      setText('.ad__avatar', brand.charAt(0).toUpperCase());
+      setText('.ad__placeholder span', brand.charAt(0).toUpperCase());
+      setText('.ad__title', form.popup_title.value, '<h3 class="ad__title"></h3>', '.ad__brand');
+      setText('.ad__text', form.popup_text.value, '<p class="ad__text"></p>', '.ad__title, .ad__brand');
+      setText('.ad__badge', form.popup_badge.value, '<span class="ad__badge"></span>', '.ad__media > :first-child');
+      var cta = q('.ad__cta');
+      if (cta) cta.firstChild.textContent = (form.popup_button.value || 'Xem ngay') + ' ';
+    }
+
+    // Update text of an element; create it after `after` if missing, hide it when empty
+    function setText(sel, value, html, after) {
+      var el = q(sel);
+      if (!el && html && value) {
+        var ref = doc().querySelectorAll(after);
+        ref = ref[ref.length - 1];
+        if (!ref) return;
+        ref.insertAdjacentHTML('afterend', html);
+        el = q(sel);
+      }
+      if (!el) return;
+      el.textContent = value;
+      el.style.display = value ? '' : 'none';
+    }
+
+    form.addEventListener('input', sync);
+    form.addEventListener('change', sync);
+    frame.addEventListener('load', sync);
+  })();
+</script>
+<%- include('_footer') %>

@@ -1,0 +1,15 @@
+<% if (popular.length) { %>
+<section class="widget" id="popular">
+  <h3 class="section-title">Đọc nhiều</h3>
+  <ol class="popular-list">
+    <% popular.forEach(function (p, i) { %>
+      <li>
+        <a href="/p/<%= p.slug %>">
+          <span class="rank"><%= i + 1 %></span>
+          <span class="popular-title"><%= p.title %></span>
+        </a>
+      </li>
+    <% }) %>
+  </ol>
+</section>
+<% } %>

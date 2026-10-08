@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> - Admin</title>
+  <meta name="robots" content="noindex">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css">
+  <% if (typeof editor !== 'undefined') { %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.min.css">
+  <% } %>
+</head>
+<body>
+  <nav class="admin-nav">
+    <div class="wrap">
+      <strong><%= settings.site_name %> · Admin</strong>
+      <div>
+        <a href="/admin">Bài viết</a>
+        <a href="/admin/posts/new">+ Viết bài</a>
+        <a href="/admin/feeds">Nguồn tin RSS</a>
+        <a href="/admin/settings">Cài đặt</a>
+        <a href="/" target="_blank">Xem trang</a>
+        <a href="/admin/logout">Đăng xuất</a>
+      </div>
+    </div>
+  </nav>
+  <div class="wrap">
+    <% if (flash) { %><div class="flash <%= flash.type %>"><%= flash.msg %></div><% } %>

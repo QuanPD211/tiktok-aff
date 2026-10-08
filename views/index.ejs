@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+<% if (!posts.length) { %>
+  <div class="empty"><p>Chưa có bài viết nào.</p></div>
+<% } else { %>
+  <% const hero = page === 1 ? posts[0] : null; const rest = hero ? posts.slice(1) : posts; %>
+  <% if (hero) { %>
+  <a class="hero" href="/p/<%= hero.slug %>">
+    <div class="hero-media">
+      <% if (hero.thumbnail) { %><img src="<%= hero.thumbnail %>" alt=""><% } %>
+    </div>
+    <div class="hero-body">
+      <span class="kicker">Tiêu điểm</span>
+      <h1><%= hero.title %></h1>
+      <% if (hero.summary) { %><p><%= hero.summary %></p><% } %>
+      <time><%= hero.created_at %></time>
+    </div>
+  </a>
+  <% } %>
+
+  <div class="layout">
+    <section>
+      <% if (rest.length) { %>
+      <h3 class="section-title">Tin mới nhất</h3>
+      <div class="grid">
+        <% rest.forEach(function (p) { %><%- include('partials/card', { p }) %><% }) %>
+      </div>
+      <% } %>
+      <% if (totalPages > 1) { %>
+        <nav class="pagination">
+          <% for (let i = 1; i <= totalPages; i++) { %>
+            <a href="/?page=<%= i %>" class="<%= i === page ? 'active' : '' %>"><%= i %></a>
+          <% } %>
+        </nav>
+      <% } %>
+    </section>
+    <aside class="sidebar"><%- include('partials/popular') %></aside>
+  </div>
+<% } %>
+<%- include('partials/footer') %>
