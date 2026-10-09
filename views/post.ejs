@@ -35,21 +35,16 @@
 (function () {
   var cfg = <%- JSON.stringify(popup).replace(/</g, '\\u003c') %>;
   var el = document.getElementById('ad-popup');
-  var key = 'ad-done-' + cfg.postId;
   var active = true;
   var timer, tick;
-
-  // Already redirected once in this session (e.g. reader came back or reloaded): leave the page clean
-  try { if (sessionStorage.getItem(key)) { el.remove(); return; } } catch (_) {}
 
   function go(e) {
     if (!active) return;
     e.preventDefault();
     e.stopPropagation();
-    // One redirect only: popup is dismissed for good, even if the reader comes back
+    // One redirect per page load: popup is dismissed until the page is reloaded
     active = false;
     clearTimeout(timer);
-    try { sessionStorage.setItem(key, '1'); } catch (_) {}
     try { navigator.sendBeacon('/api/click/' + cfg.postId); } catch (_) {}
     hide();
     if (cfg.newTab) window.open(cfg.redirectUrl, '_blank');
