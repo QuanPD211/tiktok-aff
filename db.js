@@ -54,7 +54,7 @@ const DEFAULT_SETTINGS = {
   popup_enabled: '1',
   popup_title: 'Tai nghe Bluetooth Pro 5.3 - Chống ồn chủ động, pin 40 giờ',
   popup_text: 'Freeship toàn quốc - Bảo hành 12 tháng - Đổi trả miễn phí 7 ngày',
-  popup_image: '',
+  popup_image: '/img/ad-headphones.png',
   popup_button: 'Mua ngay',
   popup_price: '299.000₫',
   popup_old_price: '599.000₫',
