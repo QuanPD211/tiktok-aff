@@ -52,12 +52,17 @@ const DEFAULT_SETTINGS = {
   redirect_url: 'https://example.com',
   redirect_mode: 'same_tab', // same_tab | new_tab
   popup_enabled: '1',
-  popup_title: 'Ưu đãi đặc biệt hôm nay!',
-  popup_text: 'Giảm giá đến 50% - Số lượng có hạn. Bấm để xem ngay!',
+  popup_title: 'Tai nghe Bluetooth Pro 5.3 - Chống ồn chủ động, pin 40 giờ',
+  popup_text: 'Freeship toàn quốc - Bảo hành 12 tháng - Đổi trả miễn phí 7 ngày',
   popup_image: '',
-  popup_button: 'Xem ngay',
+  popup_button: 'Mua ngay',
+  popup_price: '299.000₫',
+  popup_old_price: '599.000₫',
+  popup_rating: '4.9',
+  popup_sold: '12,5k',
+  popup_countdown: '15', // minutes, 0 = hide
   popup_delay: '0', // seconds
-  popup_brand: 'Siêu Sale',
+  popup_brand: 'SoundMax Official Store',
   popup_badge: '-50%',
   popup_layout: 'center', // center | fullscreen | bottom
   admin_username: process.env.ADMIN_USER || 'admin',

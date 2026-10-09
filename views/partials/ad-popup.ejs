@@ -3,6 +3,7 @@
   const layout = ['center', 'fullscreen', 'bottom'].includes(s.popup_layout) ? s.popup_layout : 'center';
   const brand = s.popup_brand || s.site_name;
   const isPreview = typeof preview !== 'undefined' && preview;
+  const countdown = parseInt(s.popup_countdown) || 0;
 %>
 <div class="ad ad--<%= layout %><%= isPreview ? ' is-open' : '' %>" <%= isPreview ? '' : 'id=ad-popup hidden' %>>
   <div class="ad__backdrop"></div>
@@ -15,24 +16,35 @@
     </div>
     <div class="ad__media">
       <% if (s.popup_image) { %>
-        <img src="<%= s.popup_image %>" alt="">
+        <img src="<%= s.popup_image %>" alt="<%= s.popup_title %>">
       <% } else { %>
         <div class="ad__placeholder"><span><%= brand.charAt(0).toUpperCase() %></span></div>
       <% } %>
       <% if (s.popup_badge) { %><span class="ad__badge"><%= s.popup_badge %></span><% } %>
+      <span class="ad__timer" <%= countdown > 0 ? '' : 'style=display:none' %> data-minutes="<%= countdown %>">
+        ⚡ Flash Sale kết thúc sau <b class="ad__clock"><%= String(countdown).padStart(2, '0') %>:00</b>
+      </span>
     </div>
     <div class="ad__body">
       <div class="ad__brand">
         <span class="ad__avatar"><%= brand.charAt(0).toUpperCase() %></span>
         <div>
           <strong><%= brand %></strong>
-          <small>Được tài trợ</small>
+          <small>Được tài trợ · Shop uy tín</small>
         </div>
       </div>
       <% if (s.popup_title) { %><h3 class="ad__title"><%= s.popup_title %></h3><% } %>
+      <div class="ad__meta">
+        <span class="ad__rating" <%= s.popup_rating ? '' : 'style=display:none' %>>★ <b><%= s.popup_rating %></b></span>
+        <span class="ad__sold" <%= s.popup_sold ? '' : 'style=display:none' %>>Đã bán <%= s.popup_sold %></span>
+      </div>
+      <div class="ad__pricebox">
+        <span class="ad__price" <%= s.popup_price ? '' : 'style=display:none' %>><%= s.popup_price %></span>
+        <span class="ad__old" <%= s.popup_old_price ? '' : 'style=display:none' %>><%= s.popup_old_price %></span>
+      </div>
       <% if (s.popup_text) { %><p class="ad__text"><%= s.popup_text %></p><% } %>
       <span class="ad__cta">
-        <%= s.popup_button || 'Xem ngay' %>
+        <%= s.popup_button || 'Mua ngay' %>
         <svg viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </span>
     </div>

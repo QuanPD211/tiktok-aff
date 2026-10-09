@@ -37,8 +37,17 @@
         <label>Tên thương hiệu<input name="popup_brand" value="<%= settings.popup_brand %>" data-preview="brand"></label>
         <label>Nhãn nổi bật (vd: -50%)<input name="popup_badge" value="<%= settings.popup_badge %>" data-preview="badge"></label>
       </div>
-      <label>Tiêu đề<input name="popup_title" value="<%= settings.popup_title %>" data-preview="title"></label>
-      <label>Nội dung<textarea name="popup_text" rows="3" data-preview="text"><%= settings.popup_text %></textarea></label>
+      <label>Tên sản phẩm<input name="popup_title" value="<%= settings.popup_title %>" data-preview="title"></label>
+      <div class="row">
+        <label>Giá bán<input name="popup_price" value="<%= settings.popup_price %>" data-preview="price"></label>
+        <label>Giá gốc (gạch ngang)<input name="popup_old_price" value="<%= settings.popup_old_price %>"></label>
+      </div>
+      <div class="row">
+        <label>Đánh giá (vd: 4.9)<input name="popup_rating" value="<%= settings.popup_rating %>"></label>
+        <label>Đã bán (vd: 12,5k)<input name="popup_sold" value="<%= settings.popup_sold %>"></label>
+      </div>
+      <label>Đếm ngược khuyến mãi (phút, 0 = ẩn)<input name="popup_countdown" type="number" min="0" value="<%= settings.popup_countdown %>"></label>
+      <label>Ưu đãi / mô tả ngắn<textarea name="popup_text" rows="3" data-preview="text"><%= settings.popup_text %></textarea></label>
       <div class="row">
         <label>Chữ trên nút<input name="popup_button" value="<%= settings.popup_button %>" data-preview="cta"></label>
         <label>Hiện popup sau (giây)<input name="popup_delay" type="number" min="0" value="<%= settings.popup_delay %>"></label>
@@ -94,8 +103,14 @@
       setText('.ad__title', form.popup_title.value, '<h3 class="ad__title"></h3>', '.ad__brand');
       setText('.ad__text', form.popup_text.value, '<p class="ad__text"></p>', '.ad__title, .ad__brand');
       setText('.ad__badge', form.popup_badge.value, '<span class="ad__badge"></span>', '.ad__media > :first-child');
+      setText('.ad__price', form.popup_price.value);
+      setText('.ad__old', form.popup_old_price.value);
+      setText('.ad__rating b', form.popup_rating.value);
+      setText('.ad__sold', form.popup_sold.value ? 'Đã bán ' + form.popup_sold.value : '');
+      var rt = q('.ad__rating'); if (rt) rt.style.display = form.popup_rating.value ? '' : 'none';
+      var cd = q('.ad__timer'); if (cd) cd.style.display = parseInt(form.popup_countdown.value) > 0 ? '' : 'none';
       var cta = q('.ad__cta');
-      if (cta) cta.firstChild.textContent = (form.popup_button.value || 'Xem ngay') + ' ';
+      if (cta) cta.firstChild.textContent = (form.popup_button.value || 'Mua ngay') + ' ';
     }
 
     // Update text of an element; create it after `after` if missing, hide it when empty

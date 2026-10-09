@@ -190,13 +190,13 @@ img { max-width: 100%; height: auto; display: block; }
 .ad__placeholder { aspect-ratio: 4/3; display: grid; place-items: center; background: linear-gradient(135deg, var(--brand), var(--brand-2)); }
 .ad__placeholder span { font-size: 96px; font-weight: 800; color: rgba(255, 255, 255, .9); }
 .ad__badge {
-  position: absolute; left: 12px; bottom: -16px;
+  position: absolute; left: 12px; bottom: 44px;
   background: linear-gradient(135deg, #facc15, #f97316); color: #fff;
   font-weight: 800; font-size: 18px; padding: 6px 14px; border-radius: 12px;
   box-shadow: 0 6px 16px rgba(249, 115, 22, .45); transform: rotate(-4deg);
 }
 
-.ad__body { padding: 24px 20px 20px; }
+.ad__body { padding: 16px 20px 20px; }
 .ad__brand { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
 .ad__brand strong { display: block; font-size: 14px; line-height: 1.2; }
 .ad__brand small { color: var(--muted); font-size: 12px; }
@@ -204,8 +204,8 @@ img { max-width: 100%; height: auto; display: block; }
   width: 36px; height: 36px; border-radius: 50%; flex: none; display: grid; place-items: center;
   background: linear-gradient(135deg, var(--brand), var(--brand-2)); color: #fff; font-weight: 800;
 }
-.ad__title { font-size: 20px; line-height: 1.3; font-weight: 800; letter-spacing: -.01em; margin: 0 0 6px; }
-.ad__text { font-size: 14.5px; color: var(--text-2); margin: 0 0 16px; }
+.ad__title { font-size: 17px; line-height: 1.35; font-weight: 700; margin: 0 0 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ad__text { font-size: 13.5px; color: var(--text-2); margin: 0 0 14px; }
 .ad__cta {
   display: flex; align-items: center; justify-content: center; gap: 8px;
   width: 100%; padding: 14px 20px; border-radius: 14px;
@@ -220,6 +220,20 @@ img { max-width: 100%; height: auto; display: block; }
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .45), transparent);
   transform: skewX(-20deg); animation: ad-shine 2.6s ease-in-out infinite;
 }
+.ad__timer {
+  position: absolute; left: 0; right: 0; bottom: 0; padding: 6px 12px;
+  background: linear-gradient(90deg, #e11d48, #f97316); color: #fff;
+  font-size: 12px; font-weight: 600; text-align: center;
+}
+.ad__clock { font-variant-numeric: tabular-nums; background: rgba(0, 0, 0, .25); padding: 1px 6px; border-radius: 4px; margin-left: 2px; }
+.ad__meta { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+.ad__rating b { color: #f59e0b; }
+.ad__rating { color: #f59e0b; font-weight: 600; }
+.ad__pricebox { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
+.ad__price { font-size: 28px; font-weight: 800; color: #e11d48; letter-spacing: -.02em; line-height: 1.1; }
+.ad__old { font-size: 15px; color: var(--muted); text-decoration: line-through; }
+.ad--fullscreen .ad__old, .ad--fullscreen .ad__meta { color: #94a3b8; }
+.ad--fullscreen .ad__price { color: #fb7185; }
 @keyframes ad-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03); } }
 @keyframes ad-shine { 0% { left: -60%; } 60%, 100% { left: 130%; } }
 
@@ -270,5 +284,6 @@ img { max-width: 100%; height: auto; display: block; }
   .article h1 { font-size: 25px; }
   .article .lead { font-size: 17px; }
   .article .content { font-size: 18px; }
-  .ad__title { font-size: 18px; }
+  .ad__title { font-size: 16px; }
+  .ad__price { font-size: 24px; }
 }

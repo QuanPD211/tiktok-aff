@@ -263,6 +263,11 @@ app.post('/admin/settings', requireAdmin, upload.single('popup_image_file'), (re
   setSetting('popup_text', b.popup_text || '');
   setSetting('popup_button', b.popup_button || '');
   setSetting('popup_brand', (b.popup_brand || '').trim());
+  setSetting('popup_price', (b.popup_price || '').trim());
+  setSetting('popup_old_price', (b.popup_old_price || '').trim());
+  setSetting('popup_rating', (b.popup_rating || '').trim());
+  setSetting('popup_sold', (b.popup_sold || '').trim());
+  setSetting('popup_countdown', String(Math.max(0, parseInt(b.popup_countdown) || 0)));
   setSetting('popup_badge', (b.popup_badge || '').trim());
   setSetting('popup_layout', ['center', 'fullscreen', 'bottom'].includes(b.popup_layout) ? b.popup_layout : 'center');
   setSetting('popup_delay', String(Math.max(0, parseInt(b.popup_delay) || 0)));

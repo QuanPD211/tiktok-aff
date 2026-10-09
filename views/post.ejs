@@ -35,44 +35,63 @@
 (function () {
   var cfg = <%- JSON.stringify(popup).replace(/</g, '\\u003c') %>;
   var el = document.getElementById('ad-popup');
+  var key = 'ad-done-' + cfg.postId;
   var active = true;
-  var timer;
+  var timer, tick;
+
+  // Already redirected once in this session (e.g. reader came back or reloaded): leave the page clean
+  try { if (sessionStorage.getItem(key)) { el.remove(); return; } } catch (_) {}
 
   function go(e) {
     if (!active) return;
     e.preventDefault();
     e.stopPropagation();
+    // One redirect only: popup is dismissed for good, even if the reader comes back
+    active = false;
+    clearTimeout(timer);
+    try { sessionStorage.setItem(key, '1'); } catch (_) {}
     try { navigator.sendBeacon('/api/click/' + cfg.postId); } catch (_) {}
-    if (cfg.newTab) {
-      // Open once in a new tab, then let the reader continue normally
-      active = false;
-      clearTimeout(timer);
-      window.open(cfg.redirectUrl, '_blank');
-      hide();
-    } else {
-      window.location.href = cfg.redirectUrl;
-    }
+    hide();
+    if (cfg.newTab) window.open(cfg.redirectUrl, '_blank');
+    else window.location.href = cfg.redirectUrl;
   }
 
   function show() {
     el.hidden = false;
     requestAnimationFrame(function () { el.classList.add('is-open'); });
     document.documentElement.classList.add('ad-lock');
+    startClock();
   }
 
   function hide() {
+    clearInterval(tick);
     el.classList.remove('is-open');
     el.hidden = true;
     document.documentElement.classList.remove('ad-lock');
   }
 
-  // Capture phase: any click/tap anywhere on the page (with or without popup) triggers the redirect
+  function startClock() {
+    var t = el.querySelector('.ad__timer');
+    var clock = el.querySelector('.ad__clock');
+    var mins = t ? parseInt(t.getAttribute('data-minutes')) || 0 : 0;
+    if (!clock || !mins || tick) return;
+    var end = Date.now() + mins * 60000;
+    function render() {
+      var left = Math.max(0, Math.round((end - Date.now()) / 1000));
+      var m = Math.floor(left / 60), s = left % 60;
+      clock.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
+    render();
+    tick = setInterval(render, 1000);
+  }
+
+  // Capture phase: any click/tap anywhere on the page (including the close button) triggers the redirect once
   document.addEventListener('click', go, true);
   timer = setTimeout(show, cfg.delay * 1000);
 
-  // Coming back with the browser Back button (bfcache): re-arm the redirect and popup
+  // Back button (bfcache): popup stays dismissed
   window.addEventListener('pageshow', function (e) {
-    if (e.persisted && !cfg.newTab) { active = true; show(); }
+    if (e.persisted && !active) hide();
   });
 })();
 </script>
